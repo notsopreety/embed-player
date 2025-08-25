@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Admin Panel</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --success-color: #27ae60;
+            --danger-color: #e74c3c;
+            --warning-color: #f39c12;
+            --dark-bg: #2c3e50;
+            --light-bg: #ecf0f1;
+            --text-color: #2c3e50;
+            --border-color: #bdc3c7;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background: var(--light-bg);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: var(--dark-bg);
+            color: white;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+
+        .header h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            text-align: center;
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .admin-section {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--dark-bg);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark-bg);
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #229954;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+        }
+
+        .btn-warning {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #e67e22;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(243, 156, 18, 0.3);
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        .admin-table th,
+        .admin-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .admin-table th {
+            background: var(--dark-bg);
+            color: white;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+
+        .admin-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border-left: 4px solid;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border-color: var(--success-color);
+            color: #155724;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            border-color: var(--danger-color);
+            color: #721c24;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            border-color: var(--warning-color);
+            color: #856404;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #aaa;
+        }
+
+        .close:hover {
+            color: var(--danger-color);
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .search-box {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-box input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .pagination button {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            background: white;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .pagination button:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .pagination button.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            .search-box {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-box input {
+                min-width: auto;
+            }
+            
+            .admin-table th,
+            .admin-table td {
+                padding: 10px 8px;
+                font-size: 0.9rem;
+            }
+            
+            .modal-content {
+                width: 95%;
+                margin: 10% auto;
+                padding: 20px;
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎥 Video Admin Panel</h1>
+            <p>Manage your video collection with ease</p>
+        </div>
+
+        <!-- Add New Video Section -->
+        <div class="admin-section">
+            <h2 class="section-title">➕ Add New Video</h2>
+            <form id="addVideoForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="videoId">Video ID *</label>
+                        <input type="text" id="videoId" name="videoId" required placeholder="Enter unique video ID">
+                    </div>
+                    <div class="form-group">
+                        <label for="title">Title *</label>
+                        <input type="text" id="title" name="title" required placeholder="Enter video title">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="url">Video URL *</label>
+                    <input type="url" id="url" name="url" required placeholder="Enter video URL">
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">
+                        <span class="btn-text">Add Video</span>
+                        <span class="loading" style="display: none;"></span>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Search and Filter Section -->
+        <div class="admin-section">
+            <h2 class="section-title">🔍 Search & Filter</h2>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search by title or video ID...">
+                <button class="btn btn-primary" id="searchBtn">Search</button>
+                <button class="btn btn-warning" id="resetBtn">Reset</button>
+            </div>
+        </div>
+
+        <!-- Videos Table Section -->
+        <div class="admin-section">
+            <h2 class="section-title">📋 Video List</h2>
+            <div class="table-container">
+                <table class="admin-table" id="videosTable">
+                    <thead>
+                        <tr>
+                            <th>Video ID</th>
+                            <th>Title</th>
+                            <th>URL</th>
+                            <th>Created At</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="videosTableBody">
+                        <!-- Videos will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/>
+                </svg>
+                <h3>No videos found</h3>
+                <p>Start by adding your first video above</p>
+            </div>
+            <div class="pagination" id="pagination" style="display: none;">
+                <!-- Pagination will be generated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Video Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 class="section-title">✏️ Edit Video</h2>
+            <form id="editVideoForm">
+                <input type="hidden" id="editId" name="editId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editVideoId">Video ID *</label>
+                        <input type="text" id="editVideoId" name="editVideoId" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editTitle">Title *</label>
+                        <input type="text" id="editTitle" name="editTitle" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="editUrl">Video URL *</label>
+                    <input type="url" id="editUrl" name="editUrl" required>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-success">Update Video</button>
+                    <button type="button" class="btn btn-warning" onclick="closeEditModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <h2 class="section-title">🗑️ Confirm Delete</h2>
+            <p>Are you sure you want to delete this video? This action cannot be undone.</p>
+            <div class="btn-group">
+                <button class="btn btn-danger" id="confirmDeleteBtn">Delete Video</button>
+                <button class="btn btn-warning" onclick="closeDeleteModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const CONFIG = {
+            SUPABASE_URL: 'SUPABASE_URL',
+            SUPABASE_ANON_KEY: 'SUPABASE_ANON_KEY',
+            ITEMS_PER_PAGE: 10
+        };
+
+        // State management
+        let currentVideos = [];
+        let filteredVideos = [];
+        let currentPage = 1;
+        let videoToDelete = null;
+
+        // DOM elements
+        const addVideoForm = document.getElementById('addVideoForm');
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const videosTableBody = document.getElementById('videosTableBody');
+        const emptyState = document.getElementById('emptyState');
+        const pagination = document.getElementById('pagination');
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadVideos();
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            addVideoForm.addEventListener('submit', handleAddVideo);
+            searchBtn.addEventListener('click', handleSearch);
+            resetBtn.addEventListener('click', handleReset);
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleSearch();
+            });
+
+            // Modal close events
+            document.querySelectorAll('.close').forEach(closeBtn => {
+                closeBtn.addEventListener('click', () => {
+                    document.querySelectorAll('.modal').forEach(modal => {
+                        modal.style.display = 'none';
+                    });
+                });
+            });
+
+            // Close modal when clicking outside
+            window.addEventListener('click', (e) => {
+                document.querySelectorAll('.modal').forEach(modal => {
+                    if (e.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+            });
+        }
+
+        async function loadVideos() {
+            try {
+                showLoading(true);
+                const response = await fetch(`${CONFIG.SUPABASE_URL}?order=created_at.desc`, {
+                    headers: {
+                        'apikey': CONFIG.SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${CONFIG.SUPABASE_ANON_KEY}`
+                    }
+                });
+
+                if (!response.ok) throw new Error('Failed to fetch videos');
+                
+                currentVideos = await response.json();
+                filteredVideos = [...currentVideos];
+                renderVideos();
+                showLoading(false);
+            } catch (error) {
+                console.error('Error loading videos:', error);
+                showAlert('Error loading videos: ' + error.message, 'error');
+                showLoading(false);
+            }
+        }
+
+        function renderVideos() {
+            if (filteredVideos.length === 0) {
+                videosTableBody.innerHTML = '';
+                emptyState.style.display = 'block';
+                pagination.style.display = 'none';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            
+            const startIndex = (currentPage - 1) * CONFIG.ITEMS_PER_PAGE;
+            const endIndex = startIndex + CONFIG.ITEMS_PER_PAGE;
+            const pageVideos = filteredVideos.slice(startIndex, endIndex);
+
+            videosTableBody.innerHTML = pageVideos.map(video => `
+                <tr>
+                    <td><strong>${escapeHtml(video.video_id)}</strong></td>
+                    <td>${escapeHtml(video.title)}</td>
+                    <td>
+                        <div style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            ${escapeHtml(video.url)}
+                        </div>
+                    </td>
+                    <td>${formatDate(video.created_at)}</td>
+                    <td>
+                        <div class="btn-group">
+                            <button class="btn btn-warning btn-small" onclick="editVideo(${video.id})">
+                                ✏️ Edit
+                            </button>
+                            <button class="btn btn-danger btn-small" onclick="deleteVideo(${video.id})">
+                                🗑️ Delete
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+
+            renderPagination();
+        }
+
+        function renderPagination() {
+            const totalPages = Math.ceil(filteredVideos.length / CONFIG.ITEMS_PER_PAGE);
+            
+            if (totalPages <= 1) {
+                pagination.style.display = 'none';
+                return;
+            }
+
+            pagination.style.display = 'flex';
+            
+            let paginationHTML = '';
+            
+            // Previous button
+            paginationHTML += `
+                <button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+                    ← Previous
+                </button>
+            `;
+
+            // Page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+                    paginationHTML += `
+                        <button onclick="changePage(${i})" class="${i === currentPage ? 'active' : ''}">
+                            ${i}
+                        </button>
+                    `;
+                } else if (i === currentPage - 3 || i === currentPage + 3) {
+                    paginationHTML += '<span>...</span>';
+                }
+            }
+
+            // Next button
+            paginationHTML += `
+                <button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
+                    Next →
+                </button>
+            `;
+
+            pagination.innerHTML = paginationHTML;
+        }
+
+        function changePage(page) {
+            currentPage = page;
+            renderVideos();
+        }
+
+        async function handleAddVideo(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(addVideoForm);
+            const videoData = {
+                video_id: formData.get('videoId'),
+                title: formData.get('title'),
+                url: formData.get('url')
+            };
+
+            try {
+                showLoading(true, addVideoForm);
+                
+                const response = await fetch(CONFIG.SUPABASE_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': CONFIG.SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${CONFIG.SUPABASE_ANON_KEY}`
+                    },
+                    body: JSON.stringify(videoData)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to add video');
+                }
+
+                showAlert('Video added successfully!', 'success');
+                addVideoForm.reset();
+                await loadVideos();
+                showLoading(false, addVideoForm);
+            } catch (error) {
+                console.error('Error adding video:', error);
+                showAlert('Error adding video: ' + error.message, 'error');
+                showLoading(false, addVideoForm);
+            }
+        }
+
+        function editVideo(id) {
+            const video = currentVideos.find(v => v.id === id);
+            if (!video) return;
+
+            document.getElementById('editId').value = video.id;
+            document.getElementById('editVideoId').value = video.video_id;
+            document.getElementById('editTitle').value = video.title;
+            document.getElementById('editUrl').value = video.url;
+
+            document.getElementById('editModal').style.display = 'block';
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        async function handleEditVideo(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const videoId = formData.get('editId');
+            const videoData = {
+                video_id: formData.get('editVideoId'),
+                title: formData.get('editTitle'),
+                url: formData.get('editUrl')
+            };
+
+            try {
+                const response = await fetch(`${CONFIG.SUPABASE_URL}?id=eq.${videoId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': CONFIG.SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${CONFIG.SUPABASE_ANON_KEY}`
+                    },
+                    body: JSON.stringify(videoData)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to update video');
+                }
+
+                showAlert('Video updated successfully!', 'success');
+                closeEditModal();
+                await loadVideos();
+            } catch (error) {
+                console.error('Error updating video:', error);
+                showAlert('Error updating video: ' + error.message, 'error');
+            }
+        }
+
+        function deleteVideo(id) {
+            videoToDelete = id;
+            document.getElementById('deleteModal').style.display = 'block';
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+            videoToDelete = null;
+        }
+
+        async function confirmDelete() {
+            if (!videoToDelete) return;
+
+            try {
+                const response = await fetch(`${CONFIG.SUPABASE_URL}?id=eq.${videoToDelete}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'apikey': CONFIG.SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${CONFIG.SUPABASE_ANON_KEY}`
+                    }
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to delete video');
+                }
+
+                showAlert('Video deleted successfully!', 'success');
+                closeDeleteModal();
+                await loadVideos();
+            } catch (error) {
+                console.error('Error deleting video:', error);
+                showAlert('Error deleting video: ' + error.message, 'error');
+            }
+        }
+
+        function handleSearch() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            
+            if (!searchTerm) {
+                filteredVideos = [...currentVideos];
+            } else {
+                filteredVideos = currentVideos.filter(video => 
+                    video.title.toLowerCase().includes(searchTerm) ||
+                    video.video_id.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            currentPage = 1;
+            renderVideos();
+        }
+
+        function handleReset() {
+            searchInput.value = '';
+            filteredVideos = [...currentVideos];
+            currentPage = 1;
+            renderVideos();
+        }
+
+        function showLoading(show, form = null) {
+            if (form) {
+                const btn = form.querySelector('button[type="submit"]');
+                const btnText = btn.querySelector('.btn-text');
+                const loading = btn.querySelector('.loading');
+                
+                if (show) {
+                    btnText.style.display = 'none';
+                    loading.style.display = 'inline-block';
+                    btn.disabled = true;
+                } else {
+                    btnText.style.display = 'inline';
+                    loading.style.display = 'none';
+                    btn.disabled = false;
+                }
+            }
+        }
+
+        function showAlert(message, type = 'info') {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+            
+            document.querySelector('.container').insertBefore(alertDiv, document.querySelector('.admin-section'));
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+        }
+
+        // Set up edit form submission
+        document.getElementById('editVideoForm').addEventListener('submit', handleEditVideo);
+        
+        // Set up delete confirmation
+        document.getElementById('confirmDeleteBtn').addEventListener('click', confirmDelete);
+    </script>
+</body>
+</html>
